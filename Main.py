@@ -58,20 +58,33 @@ class MicroScope:
                 # Press q to quit.
                 break
             elif k == ord('='):
-                 # Press '= +' to add scale 按键盘上的'=+'键放大当前样本
+                 # Press '= +' to add 1 scale 按键盘上的'=+'键放大1倍当前样本
                 if self.dicScale[self.nowLevel] + 1 > self.changeLevel:
                     if self.nowLevel < len(self.dicLeaves):
                             self.nowLevel += 1 #Update the leaf level
+                            self.dicScale[self.nowLevel] = 1
                 else:
                     self.dicScale[self.nowLevel] += 1
-                    
             elif k == ord('-'):
-                # Press '-' to minus scale 按键盘上的'-'键缩小当前样本
+                # Press '-' to minus scale 按键盘上的'-'键缩小1倍当前样本
                 if self.dicScale[self.nowLevel] - 1 < 1:
                     if self.nowLevel > 1:
                         self.nowLevel -= 1
+                        self.dicScale[self.nowLevel] = self.changeLevel
+                        
                 else:
                     self.dicScale[self.nowLevel] -= 1
+            elif k == ord('+'): 
+                #Press shift '=+' to add 10 scale 按键盘上的shift + '=+'键放大10倍当前样本
+                if self.nowLevel < len(self.dicLeaves):
+                    self.nowLevel += 1
+                    self.dicScale[self.nowLevel] = 1
+            elif k == ord('_'):
+                # Press shift + '-' to minus 10 scale 按键盘上的shift + '-'键缩小10倍当前样本
+                if self.nowLevel > 1:
+                    self.nowLevel -= 1
+                    self.dicScale[self.nowLevel] = self.changeLevel
+            
                 
             self.showImage(self.nowLevel)            
         cv2.destroyAllWindows()
