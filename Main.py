@@ -22,14 +22,13 @@ class MicroScope:
         self._initCV()
         
         
-
     def _readPhotos(self, dir):
         """[Read specimen photos from direction (从标本路径中读取照片)]
         
         Arguments:
             dir {[string]} -- [specimen direction(标本路径)]
         """
-        #Put all files in the corresponding directories.
+        #Put all files in the corresponding directorie s.
         LeavesFiles = glob.glob(dir + '*.jpg')
         pattern = re.compile(r'.*?leaves\\(\d+).jpg')
 
