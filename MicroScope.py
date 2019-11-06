@@ -2,11 +2,12 @@ import cv2
 import cv2.aruco as aruco
 import numpy as np
 import glob
+import sys
 
 
 class MicroScope:
 
-    def __init__(self, micro_w, micro_h, micro_posX, micro_posY, specimen_photo, specimen_id=[1]):
+    def __init__(self, micro_w, micro_h, micro_posX, micro_posY, dic_specimen_id ):
         """[Init the microscope 初始化显微镜对象]
         
         Arguments:
@@ -14,17 +15,16 @@ class MicroScope:
             micro_h {[Number]} -- [The height of microsocpe 显微镜视口高度]
             micro_posX {[Number]} -- [The x postion of microscope 显微镜视口x坐标]
             micro_posY {[Number]} -- [The y position of microscope 显微镜视口y坐标]
-            specimen_photo {[Number]} -- [The path of specimen photo 标本图片路径]
+            dic_specimen_id {[dict]} -- [The key-value : id: specimen 键值对: 图片id和标本路径]
         
-        Keyword Arguments:
-            specimen_id {list} -- [The id of specimen 标本识别id] (default: {[1]})
         """ 
         
         # Init opencv configuration 配置opencv相关信息
         self.cap = cv2.VideoCapture(0)
-        self.originImg = cv2.imread(specimen_photo)
-        self.idsArray = specimen_id
-        self.imgHeight, self.imgWidth = self.originImg.shape[:2]
+        
+        # Detect the id and show the correspongding specimen photo 检测mark id并显示对应标本图片
+        self.dic_specimen_id = dic_specimen_id
+                
         # The size of viewport of microscope. 显微镜视口大小
         self.microscope_w, self.microscope_h = micro_w, micro_h
         # Setting the name of window 设置窗口名称
@@ -35,8 +35,22 @@ class MicroScope:
         cv2.moveWindow('MicroScope', micro_posX, micro_posY)
         
         
+        # self.initViewPort()
+        
+    
+    def loadImage(self, specimen_id):
+        """[Load the speciment 加载标本]
+        
+        Arguments:
+            specimen_id {[Number]} -- [Specimen id]
+        """
+        
+        self.originImg = cv2.imread(self.dic_specimen_id[specimen_id])
+        self.specimen_id = specimen_id
+        self.imgHeight, self.imgWidth = self.originImg.shape[:2]
         self.initViewPort()
         
+    
     
     def initViewPort(self):
         """[Init microscope viewport configuration 配置显示视口相关信息]
@@ -87,7 +101,7 @@ class MicroScope:
         if ids is not None and corners is not None:
             ids = ids.flatten()
             for i in range(len(ids)):
-                if ids[i] in self.idsArray:
+                if ids[i] in self.dic_specimen_id:
                     aruco.drawDetectedMarkers(img, corners)
                     centerX = int(corners[i][0][0][0] + corners[i][0][1][0] + corners[i][0][3][0] + corners[i][0][2][0]) / 4
                     centerY = int(corners[i][0][0][1] + corners[i][0][1][1] + corners[i][0][3][1] + corners[i][0][2][1]) / 4
@@ -172,15 +186,19 @@ class MicroScope:
         
         lastCenter = None  # Center position of mark 记录找到mark中心位置
         Confirm = False  # Confirm mark position 确定mark中心位置为当前位置
+        loadedImg = False # Wheather the image has been loaded 图片是否已经被加载
+        
         while True:
             _, frame = self.cap.read()
             center, tempIds, isFind = self.FindMark(frame)
             keyBoard = cv2.waitKey(5)
-            if keyBoard == dic_scale_scope['confirm']:
+            if keyBoard == dic_scale_scope['confirm'] and not Confirm:
                 Confirm = True  # Confim. 确定当前位置为mark的起始位置
                 lastCenter = center  # Record. 记录当前mark中心位置
                 print('Confirm the mark')
-            if Confirm and isFind:
+                self.loadImage(tempIds)
+                loadedImg = True
+            if Confirm and isFind and loadedImg:
                 # When you confirm the mark and the mark is found in current frame you can move and scale the scope.
                 # 如果你已经确定mark初始位置而且当前帧也要找到mark则进行移动、放缩操作
                 if keyBoard in dic_scale_scope:  # If you press scale key. 按下缩放键进行缩放
@@ -210,11 +228,16 @@ if __name__ == '__main__':
         ord('f'): -10,# shrink 10 time 视野缩小十倍
         
     }
+
+    micro_w, micro_h = 240, 240 # The width and height of microscope 显微镜视口宽度和高度
+    micro_posX, micro_posY  = 500, 500 # The x postion of microscope 显微镜视口x、y坐标
     
-    
-    micro_w, micro_h = 240, 240
-    micro_posX, micro_posY  = 500, 500
-    specimen_photo = 'JointPhoto/Onion.jpg'
-    specimen_id = [1]
-    microScope =  MicroScope(micro_w, micro_h, micro_posX, micro_posY, specimen_photo, specimen_id)
-    microScope.run(dic_scale_scope)
+    dic_specimen_id = { # The key-value : id - specimen photo 索引和标本对应
+        1 : 'JointPhoto/Onion.jpg', # Onion 洋葱切片
+        2 : 'JointPhoto/Paramecium.jpg', # Paramecium.jpg 草履虫标本
+        3 : 'JointPhoto/SpinalCord.jpg' # SpinalCord.jpg 脊髓切片
+    }
+    while True:    
+        microScope =  MicroScope(micro_w, micro_h, micro_posX, micro_posY, dic_specimen_id)
+        microScope.run(dic_scale_scope)
+        del microScope
