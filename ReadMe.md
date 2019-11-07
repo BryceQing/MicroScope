@@ -6,3 +6,6 @@
 4. **运行显微镜程序** : 运行 [MicroScope.py](MicroScope.py), 将对应mark放入摄像头内， 当mark放到合适的位置按下键盘'='键可以确认使用该mark, 然后通过对应键(看注释)进行放缩。当需要更换标本时，按下键盘'q'键 退出当前标本， 然后选择新的mark放入合适位置进行确认， 这里提供的mark图片放入到[MarkPhoto](MarkPhoto)中可进行下载使用，当然如果添加新的标本也可以自己生成mark， 网站为： http://chev.me/arucogen/ ， 其中Marker ID为你要填写的标本id， 其他各格式如图
 ![ScreenShot](ScreenShot/ScreenShot.png)
 5. 如果有什么问题可以去 https://github.com/BryceQing/MicroScope 提问 (如果感觉还可以的话给个星 Coding不容易)
+
+# Demo video
+[AR microscope demo](https://youtu.be/kBULYRY4Itw)
