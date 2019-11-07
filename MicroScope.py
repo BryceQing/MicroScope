@@ -215,9 +215,21 @@ class MicroScope:
                     self.drawSpeimens(tempIds, lastCenter[0] - center[0], lastCenter[1] - center[1], scale=0)
                 lastCenter = center
             if keyBoard == dic_scale_scope['quit']:
+                self.reload()
                 break
+    
+    def reload(self):
+        clear_img = np.zeros((self.microscope_w, self.microscope_h, 3), np.uint8) + 255
+        cv2.imshow('MicroScope', clear_img)
+        
+        
+    def release(self):
         self.cap.release()
         cv2.destroyAllWindows()
+        
+        
+        
+        
 
 
 
@@ -245,7 +257,8 @@ if __name__ == '__main__':
         2 : 'JointPhoto/Paramecium.jpg', # Paramecium.jpg 草履虫标本
         3 : 'JointPhoto/SpinalCord.jpg' # SpinalCord.jpg 脊髓切片
     }
+    microScope =  MicroScope(micro_w, micro_h, micro_posX, micro_posY, dic_specimen_id)
     while True:    
-        microScope =  MicroScope(micro_w, micro_h, micro_posX, micro_posY, dic_specimen_id)
         microScope.run(dic_scale_scope)
-        del microScope
+    microScope.release()
+    del microScope
