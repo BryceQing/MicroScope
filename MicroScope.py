@@ -3,6 +3,10 @@ import cv2.aruco as aruco
 import numpy as np
 import glob
 import sys
+#
+__author__ =  'Qing Bryce'
+__version__ = '0.1 beta'
+
 
 
 class MicroScope:
@@ -170,10 +174,14 @@ class MicroScope:
             # Get the region of original image
             roi = self.originImg[imgTopY: imgBottomY, imgTopX: imgBottomX]
             # Resize to view_port size
-            view_roi = cv2.resize(roi, (showBottomX - showTopX, showBottomY - showTopY))
-            self.result_img = np.zeros((self.microscope_w, self.microscope_h, 3), np.uint8) + 255
-            self.result_img[showTopY: showBottomY, showTopX: showBottomX] = view_roi
-        cv2.imshow('MicroScope', self.result_img)
+            try:
+                view_roi = cv2.resize(roi, (showBottomX - showTopX, showBottomY - showTopY))
+                self.result_img = np.zeros((self.microscope_w, self.microscope_h, 3), np.uint8) + 255
+                self.result_img[showTopY: showBottomY, showTopX: showBottomX] = view_roi
+            except:
+                pass
+            finally:
+                cv2.imshow('MicroScope', self.result_img)
 
 
 
