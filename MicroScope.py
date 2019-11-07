@@ -3,7 +3,7 @@ import cv2.aruco as aruco
 import numpy as np
 import glob
 import sys
-#
+
 __author__ =  'Qing Bryce'
 __version__ = '0.1 beta'
 
